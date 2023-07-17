@@ -6,19 +6,31 @@ Collection of functions and aliases for ROS2 development
 # Prerequisites
 
 - [fzf](https://github.com/junegunn/fzf#installation)
-For Ubuntu simply: `sudo apt install fzf`. For more install options refer to the documentation
+  For Ubuntu simply: 
+  ```
+  sudo apt install fzf
+  ```
+  For more install options refer to the documentation
 
 - Bash or Zsh
 
 # Installation
 
-- Clone the repo: `git clone https://github.com/tonynajjar/ros2-aliases ~/ros2-aliases`
+- Clone the repo: `git clone https://github.com/kimushun1101/ros2-aliases.git PATH_TO_CLONE`  
+  For example:
+  ```
+  git clone https://github.com/kimushun1101/ros2-aliases.git ~/ros2-aliases
+  ```
 
 Bash:
-- Add ros2_utils.bash to your bashrc: `echo 'source ~/ros2-aliases/ros2_utils.bash' >> ~/.bashrc`
+- Add ros2_aliases.bash to your bashrc with PATH_TO_YOUR_ROS2_WS: `echo 'source PATH_TO_CLONE/ros2_aliases.bash PATH_TO_YOUR_ROS2_WS' >> ~/.bashrc`  
+  For example:
+  ```
+  echo 'source ~/ros2-aliases/ros2_aliases.bash ~/ros2_ws' >> ~/.bashrc
+  ```
 
 Zsh:
-- Add ros2_utils.zsh to your zshrc: `echo 'source ~/ros2-aliases/ros2_utils.zsh' >> ~/.zshrc`
+- help wanted
 
 # Usage
 
@@ -36,9 +48,6 @@ Zsh:
 | --- | --- |
 | `ros2 node list` | `rnlist` |
 | `ros2 node info` | `rninfo`|
-| Killing a node | `rnkill`|
-
-`rnkill` is a prototype and might not work as intended. It is an attempt to emulate ROS1's `rosnode kill`
 
 ## Services
 
@@ -59,17 +68,18 @@ Zsh:
 | Command | Alias | Arguments |
 | --- | --- | --- |
 | `ros2 run tf2_tools view_frames` | `view_frames` | namespace of TF topic [Optional] |
-| `ros2 run tf2_ros tf2_echo` | `tf2_echo`| frame 1 [Required], frame 2 [Required], namespace of TF topic [Optional] |
+| `ros2 run tf2_ros tf2_echo` | `tf2_echo`| source_frame [Required], target_frame [Required], namespace of TF topic [Optional] |
 
 ## Colcon
 
-| Command | Alias | Arguments |
-| --- | --- | --- |
-| `colcon build --symlink-install` | `cb` |
-| `colcon build --symlink-install --packages-select` | `cb`| package 1 [Required] ... package n [Optional] |
+| Command | Alias |
+| --- | --- |
+| `cd $ROS2WS` && `colcon build --merge-install --symlink-install` | `cb` |
+| `cd $ROS2WS` && `colcon build --merge-install --symlink-install --packages-select` | `cbp`|
+| `cd $ROS2WS` && `colcon build --merge-install --symlink-install --cmake-clean-cache ` | `cbc`|
 
 ## Rosdep
 
 | Command | Alias |
 | --- | --- |
-| `rosdep install --from-paths src --ignore-src -r` | `rosdep_install` |
+| `cd $ROS2WS` && `rosdep install --from-paths src --ignore-src -y` | `rosdep_install` |
