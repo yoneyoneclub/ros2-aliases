@@ -34,6 +34,8 @@ Zsh:
 
 # Usage
 
+`rahelp` shows `ros2_aliases help`.
+
 ## Topics
 
 | Command | Alias |
