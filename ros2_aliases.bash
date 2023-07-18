@@ -82,17 +82,18 @@ function find_pkg_name {
 }
 
 function colcon_build_packages_select {
-  # CMD="cd $ROS2WS && colcon build --merge-install --symlink-install --packages-select `find_pkg_name`"
+  # CMD="cd $ROS2WS && colcon build --symlink-install --packages-select `find_pkg_name`"
   cd $ROS2WS
-  CMD="colcon build --merge-install --symlink-install --packages-select `find_pkg_name`"
+  CMD="colcon build --symlink-install --packages-select `find_pkg_name`"
   $CMD
   source ./install/setup.bash
+  history -s cbp
   history -s $CMD
 }
 
-alias cb="cd $ROS2WS && colcon build --merge-install --symlink-install && source ./install/setup.bash"
+alias cb="cd $ROS2WS && colcon build --symlink-install && source ./install/setup.bash"
 alias cbp=colcon_build_packages_select
-alias cbc="cd $ROS2WS && colcon build --merge-install --symlink-install --cmake-clean-cache && source ./install/setup.bash"
+alias cbc="cd $ROS2WS && colcon build --symlink-install --cmake-clean-cache && source ./install/setup.bash"
 
 # roscd
 function roscd {
