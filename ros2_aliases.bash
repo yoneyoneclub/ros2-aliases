@@ -25,10 +25,14 @@
 export ROS_DISTRO=humble
 
 if [ $# != 1 ]; then
-    echo \[ros2_aliases.bash\] Give a single path as an argument.
-    read -p "Hit enter, and exit"
-    exit 1
+  echo \[ros2_aliases.bash\] Give a single path as an argument.
+  return
 fi
+if [ ! -d $1 ];then
+  echo "Directory not exists."
+  return
+fi
+
 export ROS2WS=$1
 echo "Current ROS2WS : $1"
 
