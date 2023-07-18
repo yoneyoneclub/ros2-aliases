@@ -25,10 +25,14 @@
 export ROS_DISTRO=humble
 
 if [ $# != 1 ]; then
-    echo \[ros2_aliases.bash\] Give a single path as an argument.
-    read -p "Hit enter, and exit"
-    exit 1
+  echo \[ros2_aliases.bash\] Give a single path as an argument.
+  return
 fi
+if [ ! -d $1 ];then
+  echo "Directory not exists."
+  return
+fi
+
 export ROS2WS=$1
 echo "Current ROS2WS : $1"
 
@@ -73,13 +77,14 @@ function chws {
 }
 
 # colcon build
-function find_pkg_dir {
-  PKG=$(find $ROS2WS/src -name "package.xml" -printf "%h\n" | awk -F/ '{print $NF}' | fzf)
-  find $ROS2WS/src -name $PKG | awk '{print length() ,$0}' | sort -n | awk '{ print  $2 }' | head -n 1
+function find_pkg_name {
+  find $ROS2WS/src -name "package.xml" -printf "%h\n" | awk -F/ '{print $NF}' | fzf
 }
 
 function colcon_build_packages_select {
-  CMD="cd $ROS2WS && colcon build --merge-install --symlink-install --packages-select `find_pkg_dir`"
+  # CMD="cd $ROS2WS && colcon build --merge-install --symlink-install --packages-select `find_pkg_name`"
+  cd $ROS2WS
+  CMD="colcon build --merge-install --symlink-install --packages-select `find_pkg_name`"
   $CMD
   source ./install/setup.bash
   history -s $CMD
@@ -91,8 +96,10 @@ alias cbc="cd $ROS2WS && colcon build --merge-install --symlink-install --cmake-
 
 # roscd
 function roscd {
-  CMD="cd `find_pkg_dir`"
+  PKG_DIR=$(find $ROS2WS/src -name `find_pkg_name` | awk '{print length() ,$0}' | sort -n | awk '{ print  $2 }' | head -n 1)
+  CMD="cd $PKG_DIR"
   $CMD
+  history -s roscd
   history -s $CMD
 }
 
