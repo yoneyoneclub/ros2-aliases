@@ -75,6 +75,18 @@ function chws {
   source $BASH_SOURCE $1
 }
 
+# change ROS domain ID
+function chrdi {
+  if [ $# != 1 ] || [ $1 -eq 0 ]; then
+    export ROS_LOCALHOST_ONLY=1
+    echo "ROS_LOCALHOST_ONLY=1"
+  else
+    export ROS_LOCALHOST_ONLY=0
+    export ROS_DOMAIN_ID=$1
+    echo "ROS_DOMAIN_ID=$1"
+  fi
+}
+
 # colcon build
 alias cb="cd $ROS_WORKSPACE && colcon build --symlink-install && source ./install/setup.bash"
 alias cbc="cd $ROS_WORKSPACE && colcon build --symlink-install --cmake-clean-cache && source ./install/setup.bash"
