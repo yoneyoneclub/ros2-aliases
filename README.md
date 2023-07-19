@@ -35,7 +35,7 @@ Zsh:
 # Usage
 
 `rahelp` shows `ros2_aliases help`.  
-`roscd` move the working directory into the selected package directory under `$ROS_WORKSPACE/src`.
+`roscd` changes the working directory into the selected package directory under `$ROS_WORKSPACE/src`.
 
 ## Topics
 
