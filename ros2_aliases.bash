@@ -138,3 +138,6 @@ function roscd {
 
 # rosdep
 alias rosdep_install="cd $ROS_WORKSPACE && rosdep install --from-paths src --ignore-src -y"
+
+# pkg
+alias rpkgexe="ros2 pkg executables"
