@@ -34,6 +34,8 @@ if [ ! -d $1 ];then
 fi
 
 export ROS_WORKSPACE=$1
+export ROS_LOCALHOST_ONLY=1
+
 source "`dirname $BASH_SOURCE[0]`/ros2_utils.bash"
 source /opt/ros/$ROS_DISTRO/setup.bash
 WS_SETUP_FILE=$ROS_WORKSPACE/install/setup.bash
