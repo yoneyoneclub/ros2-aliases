@@ -80,7 +80,8 @@ Zsh:
 | --- | --- |
 | `cd $ROS_WORKSPACE` && `colcon build --symlink-install` | `cb` |
 | `cd $ROS_WORKSPACE` && `colcon build --symlink-install --packages-select` | `cbp`|
-| `cd $ROS_WORKSPACE` && `colcon build --symlink-install --cmake-clean-cache ` | `cbc`|
+| `cd $ROS_WORKSPACE` && `colcon build --symlink-install --cmake-clean-cache ` | `cbcc`|
+| `cd $ROS_WORKSPACE` && `colcon build --symlink-install --cmake-clean-first ` | `cbcf`|
 
 ## Rosdep
 

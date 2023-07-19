@@ -51,7 +51,8 @@ function rahelp { # ros2-aliases-help
   echo "`blue ---colcon\ build---`"
   echo "`cyan cb`    : colcon build"
   echo "`cyan cbp`   : colcon build with packages select"
-  echo "`cyan cbc`   : colcon build with cache clean"
+  echo "`cyan cbcc`   : colcon build with clean cache"
+  echo "`cyan cbcf`   : colcon build with clean first"
   echo "`blue ---roscd---`"
   echo "`cyan roscd` : cd to the selected package"
   echo "`blue ---ROS\ CLI---`"
@@ -75,7 +76,7 @@ function chws {
   source $BASH_SOURCE $1
 }
 
-# change ROS domain ID
+# change ROS_DOMAIN_ID
 function chrdi {
   if [ $# != 1 ] || [ $1 -eq 0 ]; then
     export ROS_LOCALHOST_ONLY=1
@@ -89,7 +90,7 @@ function chrdi {
 
 # colcon build
 alias cb="cd $ROS_WORKSPACE && colcon build --symlink-install && source ./install/setup.bash"
-alias cbc="cd $ROS_WORKSPACE && colcon build --symlink-install --cmake-clean-cache && source ./install/setup.bash"
+alias cbcc="cd $ROS_WORKSPACE && colcon build --symlink-install --cmake-clean-cache && source ./install/setup.bash"
 function cbp {
   if [ $# -eq 0 ]; then
     PKG=$(find ~/ros2/dev_ws/src -name "package.xml" -print0 | while IFS= read -r -d '' file; do grep -oP '(?<=<name>).*?(?=</name>)' "$file"; done | fzf)
@@ -101,6 +102,20 @@ function cbp {
   $CMD
   source ./install/setup.bash
   history -s cbp $@
+  history -s $CMD
+}
+function cbcf {
+  CMD="colcon build --symlink-install --cmake-clean-first"
+  echo $CMD
+  read -p "Do you want to execute? (y:Yes/n:No): " yn
+  case "$yn" in
+    [yY]*);;
+    *) return ;;
+  esac
+  cd $ROS_WORKSPACE
+  $CMD
+  source ./install/setup.bash
+  history -s cbcf
   history -s $CMD
 }
 
