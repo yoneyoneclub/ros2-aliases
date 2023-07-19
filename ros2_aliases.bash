@@ -116,7 +116,6 @@ function cbcf {
   $CMD
   source ./install/setup.bash
   history -s cbcf
-  history -s $CMD
 }
 
 # roscd
