@@ -29,17 +29,14 @@ if [ $# != 1 ]; then
   return
 fi
 if [ ! -d $1 ];then
-  echo "Directory not exists."
+  echo "$1 : No such directory"
   return
 fi
 
-export ROS2WS=$1
-echo "Current ROS2WS : $1"
-
+export ROS_WORKSPACE=$1
 source "`dirname $BASH_SOURCE[0]`/ros2_utils.bash"
-
 source /opt/ros/$ROS_DISTRO/setup.bash
-WS_SETUP_FILE=$ROS2WS/install/setup.bash
+WS_SETUP_FILE=$ROS_WORKSPACE/install/setup.bash
 if [ -e $WS_SETUP_FILE ]; then
   source $WS_SETUP_FILE
 fi
@@ -77,32 +74,40 @@ function chws {
 }
 
 # colcon build
-function find_pkg_name {
-  find $ROS2WS/src -name "package.xml" -printf "%h\n" | awk -F/ '{print $NF}' | fzf
-}
-
-function colcon_build_packages_select {
-  # CMD="cd $ROS2WS && colcon build --symlink-install --packages-select `find_pkg_name`"
-  cd $ROS2WS
-  CMD="colcon build --symlink-install --packages-select `find_pkg_name`"
+alias cb="cd $ROS_WORKSPACE && colcon build --symlink-install && source ./install/setup.bash"
+alias cbc="cd $ROS_WORKSPACE && colcon build --symlink-install --cmake-clean-cache && source ./install/setup.bash"
+function cbp {
+  if [ $# -eq 0 ]; then
+    PKG=$(find ~/ros2/dev_ws/src -name "package.xml" -print0 | while IFS= read -r -d '' file; do grep -oP '(?<=<name>).*?(?=</name>)' "$file"; done | fzf)
+    CMD="colcon build --symlink-install --packages-select $PKG"
+  else
+    CMD="colcon build --symlink-install --packages-select $@"
+  fi
+  cd $ROS_WORKSPACE
   $CMD
   source ./install/setup.bash
-  history -s cbp
+  history -s cbp $@
   history -s $CMD
 }
 
-alias cb="cd $ROS2WS && colcon build --symlink-install && source ./install/setup.bash"
-alias cbp=colcon_build_packages_select
-alias cbc="cd $ROS2WS && colcon build --symlink-install --cmake-clean-cache && source ./install/setup.bash"
-
 # roscd
 function roscd {
-  PKG_DIR=$(find $ROS2WS/src -name `find_pkg_name` | awk '{print length() ,$0}' | sort -n | awk '{ print  $2 }' | head -n 1)
+  if [ $# -eq 1 ]; then
+    PKG_DIR_NAME=$1
+  else
+    PKG_DIR_NAME=$(find $ROS_WORKSPACE/src -name "package.xml" -printf "%h\n" | awk -F/ '{print $NF}' | fzf)
+    echo "roscd $PKG_DIR_NAME"
+  fi
+  PKG_DIR=$(find $ROS_WORKSPACE/src -name $PKG_DIR_NAME | awk '{print length() ,$0}' | sort -n | awk '{ print  $2 }' | head -n 1)
+  if [ -z $PKG_DIR ]; then
+    echo "$PKG_DIR_NAME : No such directory"
+    return
+  fi
   CMD="cd $PKG_DIR"
   $CMD
-  history -s roscd
+  history -s "roscd $PKG_DIR_NAME"
   history -s $CMD
 }
 
 # rosdep
-alias rosdep_install="cd $ROS2WS && rosdep install --from-paths src --ignore-src -y"
+alias rosdep_install="cd $ROS_WORKSPACE && rosdep install --from-paths src --ignore-src -y"

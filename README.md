@@ -23,7 +23,7 @@ Collection of functions and aliases for ROS2 development
   ```
 
 Bash:
-- Add ros2_aliases.bash to your bashrc with PATH_TO_YOUR_ROS2_WS: `echo 'source PATH_TO_CLONE/ros2_aliases.bash PATH_TO_YOUR_ROS2_WS' >> ~/.bashrc`  
+- Add ros2_aliases.bash to bashrc with your ROS_WORKSPACE: `echo 'source PATH_TO_CLONE/ros2_aliases.bash ROS_WORKSPACE' >> ~/.bashrc`  
   For example:
   ```
   echo 'source ~/ros2-aliases/ros2_aliases.bash ~/ros2_ws' >> ~/.bashrc
@@ -34,7 +34,8 @@ Zsh:
 
 # Usage
 
-`rahelp` shows `ros2_aliases help`.
+`rahelp` shows `ros2_aliases help`.  
+`roscd` move the working directory into the selected package directory under `$ROS_WORKSPACE/src`.
 
 ## Topics
 
@@ -76,12 +77,12 @@ Zsh:
 
 | Command | Alias |
 | --- | --- |
-| `cd $ROS2WS` && `colcon build --merge-install --symlink-install` | `cb` |
-| `cd $ROS2WS` && `colcon build --merge-install --symlink-install --packages-select` | `cbp`|
-| `cd $ROS2WS` && `colcon build --merge-install --symlink-install --cmake-clean-cache ` | `cbc`|
+| `cd $ROS_WORKSPACE` && `colcon build --symlink-install` | `cb` |
+| `cd $ROS_WORKSPACE` && `colcon build --symlink-install --packages-select` | `cbp`|
+| `cd $ROS_WORKSPACE` && `colcon build --symlink-install --cmake-clean-cache ` | `cbc`|
 
 ## Rosdep
 
 | Command | Alias |
 | --- | --- |
-| `cd $ROS2WS` && `rosdep install --from-paths src --ignore-src -y` | `rosdep_install` |
+| `cd $ROS_WORKSPACE` && `rosdep install --from-paths src --ignore-src -y` | `rosdep_install` |
