@@ -24,7 +24,7 @@
 
 export ROS_DISTRO=humble
 
-if [ $# != 1 ]; then
+if [ $# = 0 ]; then
   echo \[ros2_aliases.bash\] Give a single path as an argument.
   return
 fi
@@ -34,6 +34,7 @@ if [ ! -d $1 ];then
 fi
 
 export ROS_WORKSPACE=$1
+export COLCON_BUILD_ARGS=$2
 
 source "`dirname $BASH_SOURCE[0]`/ros2_utils.bash"
 source /opt/ros/$ROS_DISTRO/setup.bash
@@ -88,9 +89,19 @@ function chrdi {
 }
 
 # colcon build
-COLCON_BUILD_BASE="colcon build --symlink-install --parallel-workers $(nproc)"
-alias cb="cd $ROS_WORKSPACE && $COLCON_BUILD_BASE && source ./install/setup.bash"
-alias cbcc="cd $ROS_WORKSPACE && $COLCON_BUILD_BASE --cmake-clean-cache && source ./install/setup.bash"
+COLCON_BUILD_BASE="colcon build --symlink-install --parallel-workers $(nproc) $COLCON_BUILD_ARGS"
+function colcon_build_command_set {
+  cd $ROS_WORKSPACE
+  cyan "$2"
+  $2
+  source ./install/setup.bash
+  history -s $1
+  history -s $2
+}
+
+function cb {
+  colcon_build_command_set "cb" "$COLCON_BUILD_BASE"
+}
 function cbp {
   if [ $# -eq 0 ]; then
     PKG=$(find ~/ros2/dev_ws/src -name "package.xml" -print0 | while IFS= read -r -d '' file; do grep -oP '(?<=<name>).*?(?=</name>)' "$file"; done | fzf)
@@ -98,24 +109,20 @@ function cbp {
   else
     CMD="$COLCON_BUILD_BASE --packages-select $@"
   fi
-  cd $ROS_WORKSPACE
-  $CMD
-  source ./install/setup.bash
-  history -s cbp $@
-  history -s $CMD
+  colcon_build_command_set "cbp $@" "$CMD"
+}
+function cbcc {
+  colcon_build_command_set "cbcc" "$COLCON_BUILD_BASE --cmake-clean-cache"
 }
 function cbcf {
   CMD="$COLCON_BUILD_BASE --cmake-clean-first"
-  echo $CMD
+  cyan $CMD
   read -p "Do you want to execute? (y:Yes/n:No): " yn
   case "$yn" in
     [yY]*);;
     *) return ;;
   esac
-  cd $ROS_WORKSPACE
-  $CMD
-  source ./install/setup.bash
-  history -s cbcf
+  colcon_build_command_set "cbcf" "$CMD"
 }
 
 # roscd
