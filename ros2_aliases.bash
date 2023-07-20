@@ -88,14 +88,15 @@ function chrdi {
 }
 
 # colcon build
-alias cb="cd $ROS_WORKSPACE && colcon build --symlink-install && source ./install/setup.bash"
-alias cbcc="cd $ROS_WORKSPACE && colcon build --symlink-install --cmake-clean-cache && source ./install/setup.bash"
+colcon_build_base="colcon build --symlink-install --parallel-workers $(nproc)"
+alias cb="cd $ROS_WORKSPACE && $colcon_build_base && source ./install/setup.bash"
+alias cbcc="cd $ROS_WORKSPACE && $colcon_build_base --cmake-clean-cache && source ./install/setup.bash"
 function cbp {
   if [ $# -eq 0 ]; then
     PKG=$(find ~/ros2/dev_ws/src -name "package.xml" -print0 | while IFS= read -r -d '' file; do grep -oP '(?<=<name>).*?(?=</name>)' "$file"; done | fzf)
-    CMD="colcon build --symlink-install --packages-select $PKG"
+    CMD="$colcon_build_base --packages-select $PKG"
   else
-    CMD="colcon build --symlink-install --packages-select $@"
+    CMD="$colcon_build_base --packages-select $@"
   fi
   cd $ROS_WORKSPACE
   $CMD
@@ -104,7 +105,7 @@ function cbp {
   history -s $CMD
 }
 function cbcf {
-  CMD="colcon build --symlink-install --cmake-clean-first"
+  CMD="$colcon_build_base --cmake-clean-first"
   echo $CMD
   read -p "Do you want to execute? (y:Yes/n:No): " yn
   case "$yn" in
