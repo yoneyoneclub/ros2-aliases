@@ -34,7 +34,11 @@ if [ ! -d $1 ];then
 fi
 
 export ROS_WORKSPACE=$1
-export COLCON_BUILD_ARGS=$2
+if [ -n "$2" ]; then
+  export COLCON_BUILD_ARGS=$2
+else
+  export COLCON_BUILD_ARGS="--symlink-install --parallel-workers $(nproc)"
+fi
 
 source "`dirname $BASH_SOURCE[0]`/ros2_utils.bash"
 source /opt/ros/$ROS_DISTRO/setup.bash
@@ -89,7 +93,7 @@ function chrdi {
 }
 
 # colcon build
-COLCON_BUILD_BASE="colcon build --symlink-install --parallel-workers $(nproc) $COLCON_BUILD_ARGS"
+COLCON_BUILD_BASE="colcon build $COLCON_BUILD_ARGS"
 function colcon_build_command_set {
   cd $ROS_WORKSPACE
   cyan "$2"
