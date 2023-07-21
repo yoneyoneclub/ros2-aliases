@@ -73,6 +73,8 @@ function rahelp { # ros2-aliases-help
   echo "`cyan tf_echo\ \[source_frame\]\ \[target_frame\]\ \(namespace\)` : ros2 run tf2_ros tf2_echo"
   echo "`blue ---rosdep---`"
   echo "`cyan rosdep_install` : rosdep install"
+  echo "`blue ---offical---`"
+  echo "`cyan "ros2 -h"` : The Official help"
 }
 
 # change ROS 2 workspace
