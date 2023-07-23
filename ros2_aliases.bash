@@ -24,22 +24,33 @@
 
 export ROS_DISTRO=humble
 
+function red  { echo -e "\033[31m$1\033[m"; }
+function blue { echo -e "\033[34m$1\033[m"; }
+function cyan { echo -e "\033[36m$1\033[m"; }
+
 if [ $# = 0 ]; then
   echo \[ros2_aliases.bash\] Give a single path as an argument.
   return
 fi
 if [ ! -d $1 ];then
-  echo "$1 : No such directory"
+  red "No such directory : $1"
   return
 fi
 
+# Load arguments
 export ROS_WORKSPACE=$1
 if [ -n "$2" ]; then
-  export COLCON_BUILD_ARGS=$2
+  if [[ $2 == "colcon build "* ]]; then
+    export COLCON_BUILD_CMD="$2"
+  else
+    red "Invalid command for colcon build : $2"
+    return
+  fi
 else
-  export COLCON_BUILD_ARGS="--symlink-install --parallel-workers $(nproc)"
+  export COLCON_BUILD_CMD="colcon build --symlink-install --parallel-workers $(nproc)"
 fi
 
+# source other scripts
 source "`dirname $BASH_SOURCE[0]`/ros2_utils.bash"
 source /opt/ros/$ROS_DISTRO/setup.bash
 WS_SETUP_FILE=$ROS_WORKSPACE/install/setup.bash
@@ -47,19 +58,20 @@ if [ -e $WS_SETUP_FILE ]; then
   source $WS_SETUP_FILE
 fi
 
-# help
-function blue { echo -e "\033[34m$1\033[m"; }
-function cyan { echo -e "\033[36m$1\033[m"; }
-function rahelp { # ros2-aliases-help
+# ros2 aliases help
+function rahelp {
+  blue "---change environments---"
   echo "`cyan chws\ PATH_TO_WORKSPACE` : change ROS 2 workspace"
-  echo "`blue ---colcon\ build---`"
+  echo "`cyan chrdi\ ROS_DOMAIN_ID` : change ROS_DOMAIN_ID and ROS_LOCALHOST_ONLY"
+  echo "`cyan chcbc\ COLCON_BUILD_COMMAND` : change colcon build command with its arguments"
+  blue "---colcon build---"
   echo "`cyan cb`    : colcon build"
   echo "`cyan cbp`   : colcon build with packages select"
   echo "`cyan cbcc`   : colcon build with clean cache"
   echo "`cyan cbcf`   : colcon build with clean first"
-  echo "`blue ---roscd---`"
+  blue "---roscd---"
   echo "`cyan roscd` : cd to the selected package"
-  echo "`blue ---ROS\ CLI---`"
+  blue "---ROS\ CLI---"
   echo "`cyan rnlist` : ros2 node list"
   echo "`cyan rninfo` : ros2 node info"
   echo "`cyan rtlist` : ros2 topic list"
@@ -68,12 +80,12 @@ function rahelp { # ros2-aliases-help
   echo "`cyan rplist` : ros2 param list"
   echo "`cyan rpget`  : ros2 param get"
   echo "`cyan rpset`  : ros2 param set"
-  echo "`blue ---TF---`"
+  blue "---TF---"
   echo "`cyan view_frames\ \(namespace\)` : ros2 run tf2_tools view_frames"
   echo "`cyan tf_echo\ \[source_frame\]\ \[target_frame\]\ \(namespace\)` : ros2 run tf2_ros tf2_echo"
-  echo "`blue ---rosdep---`"
+  blue "---rosdep---"
   echo "`cyan rosdep_install` : rosdep install"
-  echo "`blue ---offical---`"
+  blue "---offical---"
   echo "`cyan "ros2 -h"` : The Official help"
 }
 
@@ -94,8 +106,12 @@ function chrdi {
   fi
 }
 
+# change colcon build
+function chcbc {
+  source $BASH_SOURCE "$ROS_WORKSPACE" "$1"
+}
+
 # colcon build
-COLCON_BUILD_BASE="colcon build $COLCON_BUILD_ARGS"
 function colcon_build_command_set {
   cd $ROS_WORKSPACE
   cyan "$2"
@@ -105,23 +121,24 @@ function colcon_build_command_set {
   history -s $2
 }
 
+# colcon build functions
 function cb {
-  colcon_build_command_set "cb" "$COLCON_BUILD_BASE"
+  colcon_build_command_set "cb" "$COLCON_BUILD_CMD"
 }
 function cbp {
   if [ $# -eq 0 ]; then
     PKG=$(find ~/ros2/dev_ws/src -name "package.xml" -print0 | while IFS= read -r -d '' file; do grep -oP '(?<=<name>).*?(?=</name>)' "$file"; done | fzf)
-    CMD="$COLCON_BUILD_BASE --packages-select $PKG"
+    CMD="$COLCON_BUILD_CMD --packages-select $PKG"
   else
-    CMD="$COLCON_BUILD_BASE --packages-select $@"
+    CMD="$COLCON_BUILD_CMD --packages-select $@"
   fi
   colcon_build_command_set "cbp $@" "$CMD"
 }
 function cbcc {
-  colcon_build_command_set "cbcc" "$COLCON_BUILD_BASE --cmake-clean-cache"
+  colcon_build_command_set "cbcc" "$COLCON_BUILD_CMD --cmake-clean-cache"
 }
 function cbcf {
-  CMD="$COLCON_BUILD_BASE --cmake-clean-first"
+  CMD="$COLCON_BUILD_CMD --cmake-clean-first"
   cyan $CMD
   read -p "Do you want to execute? (y:Yes/n:No): " yn
   case "$yn" in
