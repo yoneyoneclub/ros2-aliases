@@ -28,6 +28,10 @@ Bash:
   ```
   echo 'source ~/ros2-aliases/ros2_aliases.bash ~/ros2_ws' >> ~/.bashrc
   ```
+- (Optional) The 2nd argument sets colcon build command :
+  ```
+  echo 'source ~/ros2-aliases/ros2_aliases.bash ~/ros2_ws "colcon build --symlink-install --parallel-workers $(nproc) --cmake-args -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=0"' >> ~/.bashrc
+  ```
 
 Zsh:
 - help wanted
@@ -37,6 +41,7 @@ Zsh:
 `rahelp` shows `ros2_aliases help`.  
 `roscd` changes the working directory into the selected package directory under `$ROS_WORKSPACE/src`.  
 `chrdi` changes ROS_DOMAIN_ID. If the argument is 0, ROS_LOCALHOST_ONLY=1 is set.
+`chcbc` changes colcon build command with its arguments.
 
 ## Topics
 
