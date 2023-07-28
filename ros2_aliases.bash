@@ -22,6 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+export ROS2_ALIASES=$BASH_SOURCE
 export ROS_DISTRO=humble
 
 function red  { echo -e "\033[31m$1\033[m"; }
@@ -29,7 +30,7 @@ function blue { echo -e "\033[34m$1\033[m"; }
 function cyan { echo -e "\033[36m$1\033[m"; }
 
 if [ $# = 0 ]; then
-  echo \[ros2_aliases.bash\] Give a single path as an argument.
+  red \[ros2_aliases.bash\] Give a single path as an argument.
   return
 fi
 if [ ! -d $1 ];then
@@ -51,7 +52,7 @@ else
 fi
 
 # source other scripts
-source "`dirname $BASH_SOURCE[0]`/ros2_utils.bash"
+source "`dirname $ROS2_ALIASES`/ros2_utils.bash"
 source /opt/ros/$ROS_DISTRO/setup.bash
 WS_SETUP_FILE=$ROS_WORKSPACE/install/setup.bash
 if [ -e $WS_SETUP_FILE ]; then
@@ -91,7 +92,7 @@ function rahelp {
 
 # change ROS 2 workspace
 function chws {
-  source $BASH_SOURCE $1
+  source $ROS2_ALIASES $1
 }
 
 # change ROS_DOMAIN_ID
@@ -108,7 +109,13 @@ function chrdi {
 
 # change colcon build
 function chcbc {
-  source $BASH_SOURCE "$ROS_WORKSPACE" "$1"
+  if [ $# != 1 ]; then
+    red "[Usage] chcbc COLCON_BUILD_CMD"
+    echo "current COLCON_BUILD_CMD=`cyan "$COLCON_BUILD_CMD"`"
+    echo "default COLCON_BUILD_CMD=`cyan "colcon build --symlink-install --parallel-workers $(nproc)"`"
+    return
+  fi
+  source $ROS2_ALIASES "$ROS_WORKSPACE" "$1"
 }
 
 # colcon build
