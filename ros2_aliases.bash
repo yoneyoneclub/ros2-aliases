@@ -30,7 +30,8 @@ function blue { echo -e "\033[34m$1\033[m"; }
 function cyan { echo -e "\033[36m$1\033[m"; }
 
 if [ $# = 0 ]; then
-  red \[ros2_aliases.bash\] Give a single path as an argument.
+  red "\[ros2_aliases.bash\] Give a single path as an argument."
+  red "[Usage] source PATH_TO_CLONE/ros2_aliases.bash ROS_WORKSPACE"
   return
 fi
 if [ ! -d $1 ];then
@@ -62,9 +63,10 @@ fi
 # ros2 aliases help
 function rahelp {
   blue "---change environments---"
+  echo "`cyan raconfig` : search and load config for ros2-aliases"
   echo "`cyan chws\ PATH_TO_WORKSPACE` : change ROS 2 workspace"
-  echo "`cyan chrdi\ ROS_DOMAIN_ID` : change ROS_DOMAIN_ID and ROS_LOCALHOST_ONLY"
   echo "`cyan chcbc\ COLCON_BUILD_COMMAND` : change colcon build command with its arguments"
+  echo "`cyan chrdi\ ROS_DOMAIN_ID` : change ROS_DOMAIN_ID and ROS_LOCALHOST_ONLY"
   blue "---colcon build---"
   echo "`cyan cb`    : colcon build"
   echo "`cyan cbp`   : colcon build with packages select"
@@ -90,9 +92,27 @@ function rahelp {
   echo "`cyan "ros2 -h"` : The Official help"
 }
 
+# ---change environments---
+function raconfig {
+  CONFIG_FILE=`find ~ \( -path "$HOME/.config" -o -name "ros2_aliases.bash" \) -prune -o -type f \( -name "*.sh" -o -name "*.bash" \) -exec grep -l "ROS2_ALIASES" {} + | fzf`
+  source $CONFIG_FILE
+  echo "Load `cyan "$CONFIG_FILE"`"
+}
+
 # change ROS 2 workspace
 function chws {
   source $ROS2_ALIASES $1
+}
+
+# change colcon build
+function chcbc {
+  if [ $# != 1 ]; then
+    red "[Usage] chcbc COLCON_BUILD_CMD"
+    echo "current COLCON_BUILD_CMD=\"`cyan "$COLCON_BUILD_CMD"`\""
+    echo "default COLCON_BUILD_CMD=\"`cyan "colcon build --symlink-install --parallel-workers $(nproc)"`\""
+    return
+  fi
+  source $ROS2_ALIASES "$ROS_WORKSPACE" "$1"
 }
 
 # change ROS_DOMAIN_ID
@@ -107,16 +127,6 @@ function chrdi {
   fi
 }
 
-# change colcon build
-function chcbc {
-  if [ $# != 1 ]; then
-    red "[Usage] chcbc COLCON_BUILD_CMD"
-    echo "current COLCON_BUILD_CMD=`cyan "$COLCON_BUILD_CMD"`"
-    echo "default COLCON_BUILD_CMD=`cyan "colcon build --symlink-install --parallel-workers $(nproc)"`"
-    return
-  fi
-  source $ROS2_ALIASES "$ROS_WORKSPACE" "$1"
-}
 
 # colcon build
 function colcon_build_command_set {

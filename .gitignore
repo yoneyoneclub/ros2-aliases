@@ -1,0 +1,2 @@
+config/*
+!config/ros2_ws_sample.bash
