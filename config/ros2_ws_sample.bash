@@ -1,7 +1,7 @@
 # ros2-aliases
-ROS_WORKSPACE="$HOME/ros2_ws" # In the case of describing the full path directly
-# ROS_WORKSPACE=`dirname $BASH_SOURCE`  # This file is place on ROS_WORKSPACE
-# ROS_WORKSPACE="`dirname $BASH_SOURCE`/.." # This file is place on the sub directory of ROS_WORKSPACE
+ROS_WORKSPACE="$HOME/ros2_ws" # In the case of describing the full path
+# ROS_WORKSPACE=`dirname $BASH_SOURCE`  # This file is place on your ROS_WORKSPACE
+# ROS_WORKSPACE="`dirname $BASH_SOURCE`/.." # This file is place on the sub directory of your ROS_WORKSPACE
 COLCON_BUILD_CMD="colcon build --symlink-install --parallel-workers $(nproc)"
 if [ -n "$ROS2_ALIASES" ]; then
   source $ROS2_ALIASES $ROS_WORKSPACE "$COLCON_BUILD_CMD"
