@@ -95,8 +95,10 @@ function rahelp {
 # ---change environments---
 function raconfig {
   CONFIG_FILE=`find ~ \( -path "$HOME/.config" -o -name "ros2_aliases.bash" \) -prune -o -type f \( -name "*.sh" -o -name "*.bash" \) -exec grep -l "ROS2_ALIASES" {} + | fzf`
-  source $CONFIG_FILE
-  echo "Load `cyan "$CONFIG_FILE"`"
+  if [ -n "$CONFIG_FILE" ]; then
+    source $CONFIG_FILE
+    echo "Load `cyan "$CONFIG_FILE"`"
+  fi
 }
 
 # change ROS 2 workspace
@@ -127,8 +129,7 @@ function chrdi {
   fi
 }
 
-
-# colcon build
+# ---colcon build---
 function colcon_build_command_set {
   cd $ROS_WORKSPACE
   cyan "$2"
@@ -137,14 +138,15 @@ function colcon_build_command_set {
   history -s $1
   history -s $2
 }
-
-# colcon build functions
 function cb {
   colcon_build_command_set "cb" "$COLCON_BUILD_CMD"
 }
 function cbp {
   if [ $# -eq 0 ]; then
-    PKG=$(find ~/ros2/dev_ws/src -name "package.xml" -print0 | while IFS= read -r -d '' file; do grep -oP '(?<=<name>).*?(?=</name>)' "$file"; done | fzf)
+    PKG=$(find $ROS_WORKSPACE/src -name "package.xml" -print0 | while IFS= read -r -d '' file; do grep -oP '(?<=<name>).*?(?=</name>)' "$file"; done | fzf)
+    if [ -z "$PKG" ]; then
+      return
+    fi
     CMD="$COLCON_BUILD_CMD --packages-select $PKG"
   else
     CMD="$COLCON_BUILD_CMD --packages-select $@"
@@ -165,17 +167,21 @@ function cbcf {
   colcon_build_command_set "cbcf" "$CMD"
 }
 
-# roscd
+
+# ---roscd---
 function roscd {
   if [ $# -eq 1 ]; then
     PKG_DIR_NAME=$1
   else
     PKG_DIR_NAME=$(find $ROS_WORKSPACE/src -name "package.xml" -printf "%h\n" | awk -F/ '{print $NF}' | fzf)
-    echo "roscd $PKG_DIR_NAME"
+    if [ -z "$PKG_DIR_NAME" ]; then
+      return
+    fi
+    cyan "roscd $PKG_DIR_NAME"
   fi
   PKG_DIR=$(find $ROS_WORKSPACE/src -name $PKG_DIR_NAME | awk '{print length() ,$0}' | sort -n | awk '{ print  $2 }' | head -n 1)
   if [ -z $PKG_DIR ]; then
-    echo "$PKG_DIR_NAME : No such directory"
+    red "$PKG_DIR_NAME : No such directory"
     return
   fi
   CMD="cd $PKG_DIR"
@@ -184,8 +190,8 @@ function roscd {
   history -s $CMD
 }
 
-# rosdep
+# ---rosdep---
 alias rosdep_install="cd $ROS_WORKSPACE && rosdep install --from-paths src --ignore-src -y"
 
-# pkg
+# ---pkg---
 alias rpkgexe="ros2 pkg executables"
