@@ -30,12 +30,15 @@ function blue { echo -e "\033[34m$1\033[m"; }
 function cyan { echo -e "\033[36m$1\033[m"; }
 
 if [ $# = 0 ]; then
-  red "\[ros2_aliases.bash\] Give a single path as an argument."
-  red "[Usage] source PATH_TO_CLONE/ros2_aliases.bash ROS_WORKSPACE"
+  red "[ros2 aliases] Give at least one path as an argument."
+  red "[Usage 1] source PATH_TO_CLONE/ros2_aliases.bash ROS_WORKSPACE"
+  red "[Usage 2] source PATH_TO_CLONE/ros2_aliases.bash ROS_WORKSPACE COLCON_BUILD_CMD"
+  red "[Usage 3] source PATH_TO_CLONE/ros2_aliases.bash CONFIG_FILE"
   return
 fi
-if [ ! -d $1 ];then
-  red "No such directory : $1"
+
+if [ ! -d "$1/src" ]; then
+  red "[ros2 aliases] No src directory in $1"
   return
 fi
 
