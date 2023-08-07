@@ -94,3 +94,8 @@ Zsh:
 | Command | Alias |
 | --- | --- |
 | `cd $ROS_WORKSPACE` && `rosdep install --from-paths src --ignore-src -y` | `rosdep_install` |
+
+## Reference
+
+- `ros2_utils.bash` : https://github.com/tonynajjar/ros2-aliases by Tony Najjar
+- `yaml.sh` : https://github.com/jasperes/bash-yaml by Jonathan Peres

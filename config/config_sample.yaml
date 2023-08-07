@@ -1,0 +1,22 @@
+Description: "This is a sample that reads a yaml file.
+  This is a test to see if this product works."
+ROS2_ALIASES:
+  # # Full path description
+  ROS_WORKSPACE: ${HOME}/ros2_ws
+  # ROS_WORKSPACE: ${HOME}/my_workspace
+  # # Relative path is also available
+  # ROS_WORKSPACE: . # This file is place on your ROS_WORKSPACE
+  # ROS_WORKSPACE: .. # This file is place on the sub directory of your ROS_WORKSPACE
+
+  COLCON_BUILD_CMD: colcon build --symlink-install --parallel-workers $(($(nproc)/2+1))
+
+  ENVIRONMENT_VARIABLES:
+    MY_ENV_1: 1
+    MY_ENV_2: 10
+    MY_ENV_3: test
+    ROS_DOMAIN_ID: 0
+    ROS_LOCALHOST_ONLY: 0
+    ROS_LOG_DIR: ~/my_logs
+    RCUTILS_LOGGING_USE_STDOUT: 1
+    RCUTILS_COLORIZED_OUTPUT: 1
+    RCUTILS_LOGGING_BUFFERED_STREAM: 1

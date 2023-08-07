@@ -37,22 +37,38 @@ if [ $# = 0 ]; then
   return
 fi
 
-if [ ! -d "$1/src" ]; then
-  red "[ros2 aliases] No src directory in $1"
+# config file load function
+function load_config_yaml {
+  echo $1
+  source "`dirname $ROS2_ALIASES`/yaml.sh"
+  eval "$(echo "$(parse_yaml $1)" | sed 's/ROS2_ALIASES_ENVIRONMENT_VARIABLES_\(.*\)=\(.*\)/export \1=\2/g')"
+  export ROS_WORKSPACE=$(eval echo "$ROS2_ALIASES_ROS_WORKSPACE")
+  export COLCON_BUILD_CMD=$(eval echo "$ROS2_ALIASES_COLCON_BUILD_CMD")
+}
+
+# arguments handling
+case "$1" in
+  *.yaml | *.yml )
+    load_config_yaml "$1"
+    ;;
+  * ) 
+    export ROS_WORKSPACE=$1
+    if [ -n "$2" ]; then
+      export COLCON_BUILD_CMD="$2"
+    else
+      export COLCON_BUILD_CMD="colcon build --symlink-install --parallel-workers $(nproc)"
+    fi
+    ;;
+esac
+
+# error check
+if [ ! -d "$ROS_WORKSPACE/src" ]; then
+  red "[ros2 aliases] No src directory in the workspace : $ROS_WORKSPACE"
   return
 fi
-
-# Load arguments
-export ROS_WORKSPACE=$1
-if [ -n "$2" ]; then
-  if [[ $2 == "colcon build "* ]]; then
-    export COLCON_BUILD_CMD="$2"
-  else
-    red "Invalid command for colcon build : $2"
-    return
-  fi
-else
-  export COLCON_BUILD_CMD="colcon build --symlink-install --parallel-workers $(nproc)"
+if [[ $COLCON_BUILD_CMD != "colcon build "* ]]; then
+  red "Invalid command for colcon build : $COLCON_BUILD_CMD"
+  return
 fi
 
 # source other scripts
@@ -66,7 +82,7 @@ fi
 # ros2 aliases help
 function rahelp {
   blue "---change environments---"
-  echo "`cyan raconfig` : search and load config for ros2-aliases"
+  echo "`cyan raload` : search and load config for ros2-aliases"
   echo "`cyan chws\ PATH_TO_WORKSPACE` : change ROS 2 workspace"
   echo "`cyan chcbc\ COLCON_BUILD_COMMAND` : change colcon build command with its arguments"
   echo "`cyan chrdi\ ROS_DOMAIN_ID` : change ROS_DOMAIN_ID and ROS_LOCALHOST_ONLY"
@@ -96,11 +112,16 @@ function rahelp {
 }
 
 # ---change environments---
-function raconfig {
-  CONFIG_FILE=`find ~ \( -path "$HOME/.config" -o -name "ros2_aliases.bash" \) -prune -o -type f \( -name "*.sh" -o -name "*.bash" \) -exec grep -l "ROS2_ALIASES" {} + | fzf`
+function raload {
+  CONFIG_FILE=`find ~ \( -path "$HOME/.config" -o -name "ros2_aliases.bash" \) -prune -o -type f \( -name "*.sh" -o -name "*.bash" -o -name "*.yaml" -o -name "*.yml" \) -exec grep -l "ROS2_ALIASES" {} + | fzf`
   if [ -n "$CONFIG_FILE" ]; then
-    source $CONFIG_FILE
-    echo "Load `cyan "$CONFIG_FILE"`"
+    if [[ "$CONFIG_FILE" =~ \.sh$|\.bash$ ]]; then
+      source $CONFIG_FILE
+    fi
+    if [[ "$CONFIG_FILE" =~ \.yaml$|\.yml$ ]]; then
+      load_config_yaml "$CONFIG_FILE"
+    fi
+    cyan "Load $CONFIG_FILE"
   fi
 }
 
