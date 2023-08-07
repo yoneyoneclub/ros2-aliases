@@ -39,7 +39,7 @@ Zsh:
 # Usage
 
 `rahelp` shows `ros2_aliases help`.  
-`raconfig` loads `ros2_aliases config`.  
+`raload` loads `ros2_aliases config`.  
 `roscd` changes the working directory into the selected package directory under `$ROS_WORKSPACE/src`.  
 `chcbc` changes colcon build command with its arguments.
 `chrdi` changes ROS_DOMAIN_ID. If the argument is 0, ROS_LOCALHOST_ONLY=1 is set.

@@ -11,9 +11,11 @@ ROS2_ALIASES:
   COLCON_BUILD_CMD: colcon build --symlink-install --parallel-workers $(($(nproc)/2+1))
 
   ENVIRONMENT_VARIABLES:
+    # ADDITION_VARIABLES
     MY_ENV_1: 1
     MY_ENV_2: 10
     MY_ENV_3: test
+    # ROS_VARIABLES
     ROS_DOMAIN_ID: 0
     ROS_LOCALHOST_ONLY: 0
     ROS_LOG_DIR: ~/my_logs
