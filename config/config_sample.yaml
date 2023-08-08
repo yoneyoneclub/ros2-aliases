@@ -5,8 +5,8 @@ ROS2_ALIASES:
   ROS_WORKSPACE: ${HOME}/ros2_ws
   # ROS_WORKSPACE: ${HOME}/my_workspace
   # # Relative path is also available
-  # ROS_WORKSPACE: . # This file is place on your ROS_WORKSPACE
-  # ROS_WORKSPACE: .. # This file is place on the sub directory of your ROS_WORKSPACE
+  # ROS_WORKSPACE: . # This file is placed on your ROS_WORKSPACE
+  # ROS_WORKSPACE: .. # This file is placed on the sub directory of your ROS_WORKSPACE
 
   COLCON_BUILD_CMD: colcon build --symlink-install --parallel-workers $(($(nproc)/2+1))
 
