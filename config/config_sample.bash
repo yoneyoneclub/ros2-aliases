@@ -1,4 +1,5 @@
 # ros2-aliases
+# Please refer to https://github.com/kimushun1101/ros2-aliases
 ROS_WORKSPACE="$HOME/ros2_ws" # In the case of describing the full path
 # ROS_WORKSPACE=`dirname $BASH_SOURCE`  # This file is place on your ROS_WORKSPACE
 # ROS_WORKSPACE="`dirname $BASH_SOURCE`/.." # This file is place on the sub directory of your ROS_WORKSPACE
