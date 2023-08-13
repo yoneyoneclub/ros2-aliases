@@ -168,9 +168,7 @@ function cb {
 function cbp {
   if [ $# -eq 0 ]; then
     PKG=$(find $ROS_WORKSPACE/src -name "package.xml" -print0 | while IFS= read -r -d '' file; do grep -oP '(?<=<name>).*?(?=</name>)' "$file"; done | fzf)
-    if [ -z "$PKG" ]; then
-      return
-    fi
+    [[ -z "$PKG" ]] && return
     CMD="$COLCON_BUILD_CMD --packages-select $PKG"
   else
     CMD="$COLCON_BUILD_CMD --packages-select $@"
@@ -198,9 +196,7 @@ function roscd {
     PKG_DIR_NAME=$1
   else
     PKG_DIR_NAME=$(find $ROS_WORKSPACE/src -name "package.xml" -printf "%h\n" | awk -F/ '{print $NF}' | fzf)
-    if [ -z "$PKG_DIR_NAME" ]; then
-      return
-    fi
+    [[ -z "$PKG_DIR_NAME" ]] && return
     cyan "roscd $PKG_DIR_NAME"
   fi
   PKG_DIR=$(find $ROS_WORKSPACE/src -name $PKG_DIR_NAME | awk '{print length() ,$0}' | sort -n | awk '{ print  $2 }' | head -n 1)
@@ -219,3 +215,31 @@ alias rosdep_install="cd $ROS_WORKSPACE && rosdep install --from-paths src --ign
 
 # ---pkg---
 alias rpkgexe="ros2 pkg executables"
+
+# ---Pull request to ros2_utils---
+# ROS 2 run
+function rrun {
+  if [ $# -eq 0 ]; then
+    PKG_NAME=$(ros2 pkg list | fzf)
+    [[ -z "$PKG_NAME" ]] && return
+    history -s "rrun $PKG_NAME"
+    rrun $PKG_NAME
+  elif [ $# -eq 1 ]; then
+    PKG_AND_EXE=$(ros2 pkg executables | grep $1 | fzf)
+    [[ -z "$PKG_AND_EXE" ]] && return
+    CMD="ros2 run $PKG_AND_EXE"
+    echo "$CMD"
+    $CMD
+    history -s $CMD
+  fi
+}
+
+# ros2 interface
+function rishow {
+  INTERFACE=$(ros2 interface list | fzf | sed 's/ //g')
+  [[ -z "$INTERFACE" ]] && return
+  CMD="ros2 interface show $INTERFACE"
+  echo $CMD
+  $CMD
+  history -s $CMD
+}
