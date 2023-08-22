@@ -44,6 +44,12 @@ Zsh:
 `chcbc` changes colcon build command with its arguments.
 `chrdi` changes ROS_DOMAIN_ID. If the argument is 0, ROS_LOCALHOST_ONLY=1 is set.
 
+## Executable
+
+| Command | Alias |
+| --- | --- |
+| `ros2 run` | `rrun` |
+
 ## Topics
 
 | Command | Alias |
